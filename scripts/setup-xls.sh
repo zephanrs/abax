@@ -12,7 +12,7 @@ case "$1" in
 esac
 
 # --- Environment setup ---
-
+export PATH="$PATH:/scratch/users/zrs29/xls/xls"
 
 # --- Activate conda ---
 . "/scratch/users/zrs29/xls/miniconda/etc/profile.d/conda.sh"
