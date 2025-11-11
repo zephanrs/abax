@@ -15,7 +15,7 @@ fn add(a: s32, b: s32) -> s32 {
 fn vvadd<N: u32>(a: s32[N], b: s32[N]) -> s32[N] {
   for (i, arr) in u32:0..N {
     update(arr, i, a[i] + b[i])
-  }(s32[N]:[0, ...])
+  }(s32[N]:[s32:0, ...])
 }
 
 // matrix-vector multiply
@@ -26,7 +26,7 @@ fn mv<N: u32>(a: s32[N][N], x: s32[N]) -> s32[N] {
         acc + a[i][j] * x[j]
       }(s32:0);
     update(arr, i, dot)
-  }(s32[N]:[0, ...])
+  }(s32[N]:[s32:0, ...])
 }
 
 // matrix-matrix multiply
@@ -39,9 +39,13 @@ fn mm<N: u32>(a: s32[N][N], b: s32[N][N]) -> s32[N][N] {
             acc + a[i][k] * b[k][j]
           }(s32:0);
         update(row, j, dot)
-      }(s32[N]:[0, ...]);
+      }(s32[N]:[s32:0, ...]);
     update(mat, i, row)
-  }(s32[N][N]:[[0, ...], ...])
+  }(s32[N][N]:[[s32:0, ...], ...])
+}
+
+fn mm4(a: s32[4][4], b: s32[4][4]) -> s32[4][4] {
+  mm<4>(a, b)
 }
 
 #[test]
