@@ -1,6 +1,11 @@
 // to interpret the tests, run:
 // interpreter_main mem.x --dslx_stdlib_path=../../xls/xls/dslx/stdlib
 
+// to generate verilog, run:
+// - ir_converter_main --top=vvadd128 mem.x --dslx_stdlib_path=../../xls/xls/dslx/stdlib > vvadd.ir
+// - opt_main vvadd.ir > vvadd.opt.ir
+// - codegen_main --pipeline_stages=5 --delay_model="sky130" --reset=rst --reset_active_low=false --reset_asynchronous=false --reset_data_path=true --flop_inputs=false --flop_outputs=false vvadd.opt.ir > vvadd.v
+
 import std;
 
 // 1 R/W RAM
@@ -113,8 +118,8 @@ pub proc vvadd<size: u32, dw: u32, len: u32, aw: u32 = { std::clog2(size) }> {
 
   next (state: (bits[aw], bool)) {
     // check for "go" message
-    let (tok, go) = recv_if(join(), start, state.1, 0);
-    let (addr, idle) = if go { (bits[aw]:0, 0) } else { state };
+    let (tok, go) = recv_if(join(), start, state.1, false);
+    let (addr, idle) = if go { (bits[aw]:0, false) } else { state };
     // construct read request
     let request = memreq {
       addr: addr,
@@ -141,7 +146,7 @@ pub proc vvadd<size: u32, dw: u32, len: u32, aw: u32 = { std::clog2(size) }> {
     let (tok, _) = recv_if(tok, resp_C, !idle, memresp { data: bits[dw]:0 });
     let d = ((addr as u32) == len - 1);
     let tok = send_if(tok, done, d, true );
-    let next_idle = if idle { 1 } else { d };
+    let next_idle = if idle { true } else { d };
     (addr + 1, next_idle)
   }
 }
@@ -236,3 +241,36 @@ proc vvadd_test {
     let tok = send(tok, term, true);
   }
 }
+
+// wrapper
+pub proc vvadd128 {
+  // channels for A, B, C
+  req_A:  chan<memreq<7, 32>> out;
+  resp_A: chan<memresp<32>>   in;
+  req_B:  chan<memreq<7, 32>> out;
+  resp_B: chan<memresp<32>>   in;
+  req_C:  chan<memreq<7, 32>> out;
+  resp_C: chan<memresp<32>>   in;
+
+  // start and done
+  start:  chan<bool> in;
+  done:   chan<bool> out;
+
+  config(req_A: chan<memreq<7,32>> out, resp_A: chan<memresp<32>> in,
+         req_B: chan<memreq<7,32>> out, resp_B: chan<memresp<32>> in,
+         req_C: chan<memreq<7,32>> out, resp_C: chan<memresp<32>> in,
+         start: chan<bool> in, done: chan<bool> out) {
+
+    spawn vvadd<u32:128, u32:32, u32:128>(req_A, resp_A,
+                                          req_B, resp_B,
+                                          req_C, resp_C,
+                                          start, done);
+
+    (req_A, resp_A, req_B, resp_B, req_C, resp_C, start, done)
+  }
+
+  init { () }
+
+  next(state: ()) { state }
+}
+
