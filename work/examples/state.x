@@ -1,6 +1,11 @@
 // to interpret the tests, run:
 // interpreter_main state.x
 
+// to generate verilog, run:
+// - ir_converter_main --top=<func> dslx.x > <func>.ir
+// - opt_main <func>.ir > <func>.opt.ir
+// - codegen_main --pipeline_stages=1 --delay_model=unit --reset=rst <func>.opt.ir > <func>.v
+
 // addition
 pub proc add {
   A: chan<u32> in;
