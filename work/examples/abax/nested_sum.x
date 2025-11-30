@@ -11,21 +11,23 @@ pub proc nested_sum {
     let (acc0, index0, ub0, index1, ub1, busy) = state;
     let (tok0, tmp0) = recv_if(join(), in0, !busy, ub0);
     let (tok1, tmp1) = recv_if(join(), in1, !busy, ub1);
-    let tmp2 = (index0 * index1);
-    let tmp3 = (acc0 as s34);
-    let tmp4 = (tmp2 as s34);
-    let tmp5 = (tmp3 + tmp4);
-    let tmp6 = (tmp5 as s32);
-    let tmp7 = tmp6;
-    let tmp8 = if (index1 + 1 >= tmp1) { s32:0 } else { index1 + 1 };
-    let tmp9 = index1 + 1 >= tmp1;
-    let tmp10 = if (tmp9 && index0 + 1 >= tmp0) { s32:0 } else if (tmp9) { index0 + 1 } else { index0 };
-    let tmp11 = tmp9 && (index0 + 1 >= tmp0);
-    send_if(tok1, out0, tmp11, tmp7);
-    let tmp12 = if (tmp11) { 0 } else { tmp7 };
-    let tmp13 = if (tmp11) { s32:0 } else { tmp10 };
-    let tmp14 = if (tmp11) { s32:0 } else { tmp8 };
-    let tmp15 = !tmp11;
-    (tmp12, tmp13, tmp0, tmp14, tmp1, tmp15)
+    let tmp2 = (tmp1 as s32);
+    let tmp3 = (index0 * index1);
+    let tmp4 = (acc0 as s34);
+    let tmp5 = (tmp3 as s34);
+    let tmp6 = (tmp4 + tmp5);
+    let tmp7 = (tmp6 as s32);
+    let tmp8 = tmp7;
+    let tmp9 = if (index0 < tmp0 && index1 < tmp1) { tmp8 } else { acc0 };
+    let tmp10 = if (index1 + 1 >= tmp1) { s32:0 } else { index1 + 1 };
+    let tmp11 = index1 + 1 >= tmp1;
+    let tmp12 = if (tmp11 && index0 + 1 >= tmp0) { s32:0 } else if (tmp11) { index0 + 1 } else { index0 };
+    let tmp13 = tmp11 && (index0 + 1 >= tmp0);
+    send_if(tok1, out0, tmp13, tmp9);
+    let tmp14 = if (tmp13) { 0 } else { tmp9 };
+    let tmp15 = if (tmp13) { s32:0 } else { tmp12 };
+    let tmp16 = if (tmp13) { s32:0 } else { tmp10 };
+    let tmp17 = !tmp13;
+    (tmp14, tmp15, tmp0, tmp16, tmp1, tmp17)
   }
 }

@@ -14,12 +14,13 @@ pub proc fact {
     let tmp3 = (tmp2 as s32);
     let tmp4 = (acc0 * tmp3);
     let tmp5 = tmp4;
-    let tmp6 = if (index0 + 1 >= tmp0) { s32:0 } else { index0 + 1 };
-    let tmp7 = index0 + 1 >= tmp0;
-    send_if(tok0, out0, tmp7, tmp5);
-    let tmp8 = if (tmp7) { 1 } else { tmp5 };
-    let tmp9 = if (tmp7) { s32:0 } else { tmp6 };
-    let tmp10 = !tmp7;
-    (tmp8, tmp9, tmp0, tmp10)
+    let tmp6 = if (index0 < tmp0) { tmp5 } else { acc0 };
+    let tmp7 = if (index0 + 1 >= tmp0) { s32:0 } else { index0 + 1 };
+    let tmp8 = index0 + 1 >= tmp0;
+    send_if(tok0, out0, tmp8, tmp6);
+    let tmp9 = if (tmp8) { 1 } else { tmp6 };
+    let tmp10 = if (tmp8) { s32:0 } else { tmp7 };
+    let tmp11 = !tmp8;
+    (tmp9, tmp10, tmp0, tmp11)
   }
 }
