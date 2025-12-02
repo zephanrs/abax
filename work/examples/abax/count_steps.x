@@ -4,12 +4,12 @@ pub proc count_steps {
 
   config(in0: chan<s32> in, out0: chan<s32> out) { (in0, out0) }
 
-  init { (0, 0, false) }
+  init { (0, 0, true, false) }
 
-  next(state: (s32, s32, bool)) {
-    let (acc0, acc1, busy) = state;
+  next(state: (s32, s32, bool, bool)) {
+    let (acc0, acc1, index0, busy) = state;
     let (tok0, tmp0) = recv_if(join(), in0, !busy, acc0);
-    let tmp1 = if (!busy) { tmp0 } else { acc0 };
+    let tmp1 = if (!busy) { tmp0 } else { acc1 };
     let tmp2 = (tmp1 > s32:1);
     let tmp3 = tmp2;
     let tmp4 = (tmp1 % s32:2);
@@ -21,15 +21,18 @@ pub proc count_steps {
     let tmp10 = (tmp9 as s32);
     let tmp11 = tmp10;
     let tmp12 = if (tmp5) { tmp7 } else { tmp11 };
-    let tmp13 = (acc1 as s33);
+    let tmp13 = (acc0 as s33);
     let tmp14 = (tmp13 + s33:1);
     let tmp15 = (tmp14 as s32);
     let tmp16 = tmp15;
-    let tmp17 = if (tmp3) { tmp12 } else { tmp1 };
-    let tmp18 = if (tmp3) { tmp16 } else { acc1 };
-    send_if(tok0, out0, !tmp3, tmp18);
-    let tmp19 = if (!tmp3) { tmp0 } else { tmp17 };
-    let tmp20 = if (!tmp3) { 0 } else { tmp18 };
-    (tmp19, tmp20, tmp3)
+    let tmp17 = if (tmp3) { tmp16 } else { acc0 };
+    let tmp18 = if (tmp3) { tmp12 } else { tmp1 };
+    let tmp19 = !tmp3;
+    let tok1 = send_if(tok0, out0, tmp19, tmp17);
+    let tmp20 = if (tmp19) { 0 } else { tmp17 };
+    let tmp21 = if (tmp19) { tmp0 } else { tmp18 };
+    let tmp22 = if (tmp19) { false } else { tmp3 };
+    let tmp23 = !tmp19;
+    (tmp20, tmp21, tmp22, tmp23)
   }
 }

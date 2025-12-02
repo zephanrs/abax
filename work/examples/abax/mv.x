@@ -99,20 +99,19 @@ pub proc mv {
     let tmp18 = if (index0 < s32:4 && index1 < s32:4) { tmp17 } else { tmp3 };
     let tmp19 = if (index1 + 1 >= s32:4) { s32:0 } else { index1 + 1 };
     let tmp20 = index1 + 1 >= s32:4;
-    let tmp21 = tmp20 && (index0 < s32:4);
-    let tmp22 = ((index0 as s32) as uN[2]);
-    let tmp23 = (tmp18 as uN[32]);
-    let tmp24 = SimpleWriteReq<u32:2, u32:32> { addr: tmp22, data: tmp23 };
+    let tmp21 = ((index0 as s32) as uN[2]);
+    let tmp22 = (tmp18 as uN[32]);
+    let tmp23 = SimpleWriteReq<u32:2, u32:32> { addr: tmp21, data: tmp22 };
     let tok5 = join(tok0, tok2, tok4);
-    let tok6 = send_if(tok5, mem2__write_req, tmp21, tmp24);
-    let (tok7, _) = recv_if(tok6, mem2__write_resp, tmp21, zero!<SimpleWriteResp>());
-    let tmp25 = if (tmp20 && index0 + 1 >= s32:4) { s32:0 } else if (tmp20) { index0 + 1 } else { index0 };
-    let tmp26 = tmp20 && (index0 + 1 >= s32:4);
-    let tok8 = send_if(tok7, done, tmp26, bool:1);
-    let tmp27 = if (tmp26) { 0 } else { tmp18 };
-    let tmp28 = if (tmp26) { s32:0 } else { tmp25 };
-    let tmp29 = if (tmp26) { s32:0 } else { tmp19 };
-    let tmp30 = (tmp1) || (busy && !tmp26);
-    (tmp27, tmp28, tmp29, tmp30)
+    let tok6 = send_if(tok5, mem2__write_req, tmp20 && (index0 < s32:4), tmp23);
+    let (tok7, _) = recv_if(tok6, mem2__write_resp, tmp20 && (index0 < s32:4), zero!<SimpleWriteResp>());
+    let tmp24 = if (tmp20 && index0 + 1 >= s32:4) { s32:0 } else if (tmp20) { index0 + 1 } else { index0 };
+    let tmp25 = tmp20 && (index0 + 1 >= s32:4);
+    let tok8 = send_if(tok7, done, tmp25, bool:1);
+    let tmp26 = if (tmp25) { 0 } else { tmp18 };
+    let tmp27 = if (tmp25) { s32:0 } else { tmp24 };
+    let tmp28 = if (tmp25) { s32:0 } else { tmp19 };
+    let tmp29 = (tmp1) || (busy && !tmp25);
+    (tmp26, tmp27, tmp28, tmp29)
   }
 }

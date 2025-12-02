@@ -20,5 +20,4 @@ pub proc wsa {
     send(tok, out1, tmp3);
     send(tok, out2, tmp4);
   }
-
 }

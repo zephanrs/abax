@@ -13,5 +13,4 @@ pub proc incr {
     let tmp3 = (tmp2 as s32);
     send(tok0, out0, tmp3);
   }
-
 }

@@ -22,5 +22,4 @@ pub proc mac {
     let tok = join(tok0, tok1, tok2);
     send(tok, out0, tmp9);
   }
-
 }

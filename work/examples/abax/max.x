@@ -15,5 +15,4 @@ pub proc max {
     let tok = join(tok0, tok1);
     send(tok, out0, tmp3);
   }
-
 }

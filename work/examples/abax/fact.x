@@ -17,7 +17,7 @@ pub proc fact {
     let tmp6 = if (index0 < tmp0) { tmp5 } else { acc0 };
     let tmp7 = if (index0 + 1 >= tmp0) { s32:0 } else { index0 + 1 };
     let tmp8 = index0 + 1 >= tmp0;
-    send_if(tok0, out0, tmp8, tmp6);
+    let tok1 = send_if(tok0, out0, tmp8, tmp6);
     let tmp9 = if (tmp8) { 1 } else { tmp6 };
     let tmp10 = if (tmp8) { s32:0 } else { tmp7 };
     let tmp11 = !tmp8;
