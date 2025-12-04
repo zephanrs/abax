@@ -36,3 +36,44 @@ pub proc count_steps {
     (tmp20, tmp21, tmp22, tmp23)
   }
 }
+
+#[test_proc]
+proc count_steps_test {
+  terminator: chan<bool> out;
+  in0_s: chan<s32> out;
+  out0_r: chan<s32> in;
+
+  config(terminator: chan<bool> out) {
+    let (in0_s, in0_r) = chan<s32>("in0");
+    let (out0_s, out0_r) = chan<s32>("out0");
+    spawn count_steps(in0_r, out0_s);
+    (terminator, in0_s, out0_r)
+  }
+
+  init { () }
+
+  next(state: ()) {
+    let tok = join();
+    // test case 0
+    let tok = send(tok, in0_s, s32:1);
+    let (tok, result_0_0) = recv(tok, out0_r);
+    assert_eq(result_0_0, s32:0);
+    // test case 1
+    let tok = send(tok, in0_s, s32:2);
+    let (tok, result_1_0) = recv(tok, out0_r);
+    assert_eq(result_1_0, s32:1);
+    // test case 2
+    let tok = send(tok, in0_s, s32:4);
+    let (tok, result_2_0) = recv(tok, out0_r);
+    assert_eq(result_2_0, s32:2);
+    // test case 3
+    let tok = send(tok, in0_s, s32:7);
+    let (tok, result_3_0) = recv(tok, out0_r);
+    assert_eq(result_3_0, s32:4);
+    // test case 4
+    let tok = send(tok, in0_s, s32:16);
+    let (tok, result_4_0) = recv(tok, out0_r);
+    assert_eq(result_4_0, s32:4);
+    send(tok, terminator, true);
+  }
+}

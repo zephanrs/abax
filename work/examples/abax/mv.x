@@ -115,3 +115,114 @@ pub proc mv {
     (tmp26, tmp27, tmp28, tmp29)
   }
 }
+
+#[test_proc]
+proc mv_test {
+  terminator: chan<bool> out;
+  mem0__read_req_s: chan<SimpleReadReq<u32:4>> out;
+  mem0__read_resp_r: chan<SimpleReadResp<u32:32>> in;
+  mem0__write_req_s: chan<SimpleWriteReq<u32:4, u32:32>> out;
+  mem0__write_resp_r: chan<SimpleWriteResp> in;
+  mem1__read_req_s: chan<SimpleReadReq<u32:2>> out;
+  mem1__read_resp_r: chan<SimpleReadResp<u32:32>> in;
+  mem1__write_req_s: chan<SimpleWriteReq<u32:2, u32:32>> out;
+  mem1__write_resp_r: chan<SimpleWriteResp> in;
+  mem2__read_req_s: chan<SimpleReadReq<u32:2>> out;
+  mem2__read_resp_r: chan<SimpleReadResp<u32:32>> in;
+  mem2__write_req_s: chan<SimpleWriteReq<u32:2, u32:32>> out;
+  mem2__write_resp_r: chan<SimpleWriteResp> in;
+  go_s: chan<bool> out;
+  done_r: chan<bool> in;
+
+  config(terminator: chan<bool> out) {
+    let (mem0__read_req_s, mem0__read_req_r) = chan<SimpleReadReq<u32:4>>("mem0__read_req");
+    let (mem0__read_resp_s, mem0__read_resp_r) = chan<SimpleReadResp<u32:32>>("mem0__read_resp");
+    let (mem0__write_req_s, mem0__write_req_r) = chan<SimpleWriteReq<u32:4, u32:32>>("mem0__write_req");
+    let (mem0__write_resp_s, mem0__write_resp_r) = chan<SimpleWriteResp>("mem0__write_resp");
+    spawn Simple1R1WRam<u32:4, u32:32, u32:16>(mem0__read_req_r, mem0__read_resp_s, mem0__write_req_r, mem0__write_resp_s);
+    let (mem1__read_req_s, mem1__read_req_r) = chan<SimpleReadReq<u32:2>>("mem1__read_req");
+    let (mem1__read_resp_s, mem1__read_resp_r) = chan<SimpleReadResp<u32:32>>("mem1__read_resp");
+    let (mem1__write_req_s, mem1__write_req_r) = chan<SimpleWriteReq<u32:2, u32:32>>("mem1__write_req");
+    let (mem1__write_resp_s, mem1__write_resp_r) = chan<SimpleWriteResp>("mem1__write_resp");
+    spawn Simple1R1WRam<u32:2, u32:32, u32:4>(mem1__read_req_r, mem1__read_resp_s, mem1__write_req_r, mem1__write_resp_s);
+    let (mem2__read_req_s, mem2__read_req_r) = chan<SimpleReadReq<u32:2>>("mem2__read_req");
+    let (mem2__read_resp_s, mem2__read_resp_r) = chan<SimpleReadResp<u32:32>>("mem2__read_resp");
+    let (mem2__write_req_s, mem2__write_req_r) = chan<SimpleWriteReq<u32:2, u32:32>>("mem2__write_req");
+    let (mem2__write_resp_s, mem2__write_resp_r) = chan<SimpleWriteResp>("mem2__write_resp");
+    spawn Simple1R1WRam<u32:2, u32:32, u32:4>(mem2__read_req_r, mem2__read_resp_s, mem2__write_req_r, mem2__write_resp_s);
+    let (go_s, go_r) = chan<bool>("go");
+    let (done_s, done_r) = chan<bool>("done");
+    spawn mv(mem0__read_req_s, mem0__read_resp_r, mem1__read_req_s, mem1__read_resp_r, mem2__write_req_s, mem2__write_resp_r, go_r, done_s);
+    (terminator, mem0__read_req_s, mem0__read_resp_r, mem0__write_req_s, mem0__write_resp_r, mem1__read_req_s, mem1__read_resp_r, mem1__write_req_s, mem1__write_resp_r, mem2__read_req_s, mem2__read_resp_r, mem2__write_req_s, mem2__write_resp_r, go_s, done_r)
+  }
+
+  init { () }
+
+  next(state: ()) {
+    let tok = join();
+    // preload memories
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:0, data: (s32:-3 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:1, data: (s32:-2 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:2, data: (s32:-1 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:3, data: (s32:0 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:4, data: (s32:1 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:5, data: (s32:2 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:6, data: (s32:3 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:7, data: (s32:4 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:8, data: (s32:5 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:9, data: (s32:6 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:10, data: (s32:7 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:11, data: (s32:8 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:12, data: (s32:9 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:13, data: (s32:10 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:14, data: (s32:11 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem0__write_req_s, SimpleWriteReq<u32:4, u32:32> { addr: uN[4]:15, data: (s32:12 as uN[32]) });
+    let (tok, _) = recv(tok, mem0__write_resp_r);
+    let tok = send(tok, mem1__write_req_s, SimpleWriteReq<u32:2, u32:32> { addr: uN[2]:0, data: (s32:1 as uN[32]) });
+    let (tok, _) = recv(tok, mem1__write_resp_r);
+    let tok = send(tok, mem1__write_req_s, SimpleWriteReq<u32:2, u32:32> { addr: uN[2]:1, data: (s32:-2 as uN[32]) });
+    let (tok, _) = recv(tok, mem1__write_resp_r);
+    let tok = send(tok, mem1__write_req_s, SimpleWriteReq<u32:2, u32:32> { addr: uN[2]:2, data: (s32:3 as uN[32]) });
+    let (tok, _) = recv(tok, mem1__write_resp_r);
+    let tok = send(tok, mem1__write_req_s, SimpleWriteReq<u32:2, u32:32> { addr: uN[2]:3, data: (s32:-4 as uN[32]) });
+    let (tok, _) = recv(tok, mem1__write_resp_r);
+    // drive scalar inputs
+    // start DUT and wait
+    let tok = send(tok, go_s, bool:1);
+    let (tok, done_flag) = recv(tok, done_r);
+    assert_eq(done_flag, bool:1);
+    // verify mem2
+    let tok = send(tok, mem2__read_req_s, SimpleReadReq<u32:2> { addr: uN[2]:0 });
+    let (tok, resp_mem2_val_0) = recv(tok, mem2__read_resp_r);
+    let mem2_val_0 = (resp_mem2_val_0.data as s32);
+    assert_eq(mem2_val_0, s32:-2);
+    let tok = send(tok, mem2__read_req_s, SimpleReadReq<u32:2> { addr: uN[2]:1 });
+    let (tok, resp_mem2_val_1) = recv(tok, mem2__read_resp_r);
+    let mem2_val_1 = (resp_mem2_val_1.data as s32);
+    assert_eq(mem2_val_1, s32:-10);
+    let tok = send(tok, mem2__read_req_s, SimpleReadReq<u32:2> { addr: uN[2]:2 });
+    let (tok, resp_mem2_val_2) = recv(tok, mem2__read_resp_r);
+    let mem2_val_2 = (resp_mem2_val_2.data as s32);
+    assert_eq(mem2_val_2, s32:-18);
+    let tok = send(tok, mem2__read_req_s, SimpleReadReq<u32:2> { addr: uN[2]:3 });
+    let (tok, resp_mem2_val_3) = recv(tok, mem2__read_resp_r);
+    let mem2_val_3 = (resp_mem2_val_3.data as s32);
+    assert_eq(mem2_val_3, s32:-26);
+    send(tok, terminator, true);
+  }
+}

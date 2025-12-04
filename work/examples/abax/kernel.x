@@ -60,17 +60,15 @@ pub proc Simple1R1WRam<ADDR_WIDTH: u32, DATA_WIDTH: u32, SIZE: u32> {
 }
 
 
-pub proc vvadd {
+pub proc kernel {
   mem0__read_req: chan<SimpleReadReq<u32:4>> out;
   mem0__read_resp: chan<SimpleReadResp<u32:32>> in;
-  mem1__read_req: chan<SimpleReadReq<u32:4>> out;
-  mem1__read_resp: chan<SimpleReadResp<u32:32>> in;
-  mem2__write_req: chan<SimpleWriteReq<u32:4, u32:32>> out;
-  mem2__write_resp: chan<SimpleWriteResp> in;
+  mem1__write_req: chan<SimpleWriteReq<u32:4, u32:32>> out;
+  mem1__write_resp: chan<SimpleWriteResp> in;
   go: chan<bool> in;
   done: chan<bool> out;
 
-  config(mem0__read_req: chan<SimpleReadReq<u32:4>> out, mem0__read_resp: chan<SimpleReadResp<u32:32>> in, mem1__read_req: chan<SimpleReadReq<u32:4>> out, mem1__read_resp: chan<SimpleReadResp<u32:32>> in, mem2__write_req: chan<SimpleWriteReq<u32:4, u32:32>> out, mem2__write_resp: chan<SimpleWriteResp> in, go: chan<bool> in, done: chan<bool> out) { (mem0__read_req, mem0__read_resp, mem1__read_req, mem1__read_resp, mem2__write_req, mem2__write_resp, go, done) }
+  config(mem0__read_req: chan<SimpleReadReq<u32:4>> out, mem0__read_resp: chan<SimpleReadResp<u32:32>> in, mem1__write_req: chan<SimpleWriteReq<u32:4, u32:32>> out, mem1__write_resp: chan<SimpleWriteResp> in, go: chan<bool> in, done: chan<bool> out) { (mem0__read_req, mem0__read_resp, mem1__write_req, mem1__write_resp, go, done) }
 
   init { (0, false) }
 
@@ -83,26 +81,20 @@ pub proc vvadd {
     let tok1 = send(join(), mem0__read_req, tmp3);
     let (tok2, tmp4) = recv(tok1, mem0__read_resp);
     let tmp5 = (tmp4.data as s32);
-    let tmp6 = ((index0 as s32) as uN[4]);
-    let tmp7 = SimpleReadReq<u32:4> { addr: tmp6 };
-    let tok3 = send(join(), mem1__read_req, tmp7);
-    let (tok4, tmp8) = recv(tok3, mem1__read_resp);
-    let tmp9 = (tmp8.data as s32);
-    let tmp10 = (tmp5 as s33);
-    let tmp11 = (tmp9 as s33);
-    let tmp12 = (tmp10 + tmp11);
-    let tmp13 = (tmp12 as s32);
-    let tmp14 = ((index0 as s32) as uN[4]);
-    let tmp15 = (tmp13 as uN[32]);
-    let tmp16 = SimpleWriteReq<u32:4, u32:32> { addr: tmp14, data: tmp15 };
-    let tok5 = join(tok0, tok2, tok4);
-    let tok6 = send(tok5, mem2__write_req, tmp16);
-    let (tok7, _) = recv(tok6, mem2__write_resp);
-    let tmp17 = if (index0 + 1 >= s32:16) { s32:0 } else { index0 + 1 };
-    let tmp18 = index0 + 1 >= s32:16;
-    let tok8 = send_if(tok7, done, tmp18, bool:1);
-    let tmp19 = if (tmp18) { s32:0 } else { tmp17 };
-    let tmp20 = (tmp1) || (busy && !tmp18);
-    (tmp19, tmp20)
+    let tmp6 = (tmp5 as s33);
+    let tmp7 = (tmp6 + s33:1);
+    let tmp8 = (tmp7 as s32);
+    let tmp9 = ((index0 as s32) as uN[4]);
+    let tmp10 = (tmp8 as uN[32]);
+    let tmp11 = SimpleWriteReq<u32:4, u32:32> { addr: tmp9, data: tmp10 };
+    let tok3 = join(tok0, tok2);
+    let tok4 = send(tok3, mem1__write_req, tmp11);
+    let (tok5, _) = recv(tok4, mem1__write_resp);
+    let tmp12 = if (index0 + 1 >= s32:10) { s32:0 } else { index0 + 1 };
+    let tmp13 = index0 + 1 >= s32:10;
+    let tok6 = send_if(tok5, done, tmp13, bool:1);
+    let tmp14 = if (tmp13) { s32:0 } else { tmp12 };
+    let tmp15 = (tmp1) || (busy && !tmp13);
+    (tmp14, tmp15)
   }
 }

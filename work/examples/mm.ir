@@ -1,0 +1,45 @@
+package dslx
+
+file_number 0 "dslx.x"
+
+fn ________dslx__mm__4_counted_for_0_body_counted_for_0_body_counted_for_0_body(k: bits[32] id=25, acc: bits[32] id=28, a: bits[32][4][4] id=29, b: bits[32][4][4] id=30, i: bits[32] id=31, j: bits[32] id=32) -> bits[32] {
+  literal.26: bits[32] = literal(value=0, id=26)
+  add.27: bits[32] = add(k, literal.26, id=27)
+  array_index.33: bits[32][4] = array_index(a, indices=[i], id=33, pos=[(0,38,19)])
+  array_index.35: bits[32][4] = array_index(b, indices=[add.27], id=35, pos=[(0,38,29)])
+  array_index.34: bits[32] = array_index(array_index.33, indices=[add.27], id=34, pos=[(0,38,22)])
+  array_index.36: bits[32] = array_index(array_index.35, indices=[j], id=36, pos=[(0,38,32)])
+  smul.37: bits[32] = smul(array_index.34, array_index.36, id=37, pos=[(0,38,22)])
+  ret add.38: bits[32] = add(acc, smul.37, id=38, pos=[(0,38,12)])
+}
+
+fn ______dslx__mm__4_counted_for_0_body_counted_for_0_body(j: bits[32] id=16, row: bits[32][4] id=19, a: bits[32][4][4] id=21, b: bits[32][4][4] id=22, i: bits[32] id=23) -> bits[32][4] {
+  literal.17: bits[32] = literal(value=0, id=17)
+  literal.24: bits[32] = literal(value=0, id=24, pos=[(0,39,12)])
+  add.18: bits[32] = add(j, literal.17, id=18)
+  dot: bits[32] = counted_for(literal.24, trip_count=4, stride=1, body=________dslx__mm__4_counted_for_0_body_counted_for_0_body_counted_for_0_body, invariant_args=[a, b, i, add.18], id=39)
+  literal.20: bits[32] = literal(value=4, id=20, pos=[(0,32,6)])
+  ret array_update.40: bits[32][4] = array_update(row, dot, indices=[add.18], id=40, pos=[(0,40,14)])
+}
+
+fn ____dslx__mm__4_counted_for_0_body(i: bits[32] id=7, mat: bits[32][4][4] id=10, a: bits[32][4][4] id=12, b: bits[32][4][4] id=13) -> bits[32][4][4] {
+  literal.14: bits[32] = literal(value=0, id=14, pos=[(0,41,16)])
+  literal.8: bits[32] = literal(value=0, id=8)
+  array.15: bits[32][4] = array(literal.14, literal.14, literal.14, literal.14, id=15, pos=[(0,41,15)])
+  add.9: bits[32] = add(i, literal.8, id=9)
+  row: bits[32][4] = counted_for(array.15, trip_count=4, stride=1, body=______dslx__mm__4_counted_for_0_body_counted_for_0_body, invariant_args=[a, b, add.9], id=41)
+  literal.11: bits[32] = literal(value=4, id=11, pos=[(0,32,6)])
+  ret array_update.42: bits[32][4][4] = array_update(mat, row, indices=[add.9], id=42, pos=[(0,42,10)])
+}
+
+fn __dslx__mm__4(a: bits[32][4][4] id=1, b: bits[32][4][4] id=2) -> bits[32][4][4] {
+  literal.4: bits[32] = literal(value=0, id=4, pos=[(0,43,16)])
+  array.5: bits[32][4] = array(literal.4, literal.4, literal.4, literal.4, id=5, pos=[(0,43,15)])
+  array.6: bits[32][4][4] = array(array.5, array.5, array.5, array.5, id=6, pos=[(0,43,14)])
+  N: bits[32] = literal(value=4, id=3, pos=[(0,32,6)])
+  ret counted_for.43: bits[32][4][4] = counted_for(array.6, trip_count=4, stride=1, body=____dslx__mm__4_counted_for_0_body, invariant_args=[a, b], id=43)
+}
+
+top fn __dslx__mm4(a: bits[32][4][4] id=44, b: bits[32][4][4] id=45) -> bits[32][4][4] {
+  ret invoke.46: bits[32][4][4] = invoke(a, b, to_apply=__dslx__mm__4, id=46, pos=[(0,47,4)])
+}
