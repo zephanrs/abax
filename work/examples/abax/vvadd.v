@@ -37,6 +37,7 @@ module __vvadd__vvadd_0_next(
   reg p1_tmp18;
   reg p0_valid;
   reg p1_valid;
+  reg p2_valid;
   reg __vvadd__mem0__read_req_has_been_sent_reg;
   reg __vvadd__mem1__read_req_has_been_sent_reg;
   reg __vvadd__mem2__write_req_has_been_sent_reg;
@@ -62,7 +63,7 @@ module __vvadd__vvadd_0_next(
   wire __vvadd__done_valid_and_not_has_been_sent;
   wire vvadd__done_valid_load_en;
   wire vvadd__done_load_en;
-  wire or_513;
+  wire or_524;
   wire p2_stage_done;
   wire p2_not_valid;
   wire p1_all_active_inputs_valid;
@@ -104,8 +105,8 @@ module __vvadd__vvadd_0_next(
   wire vvadd__mem0__read_resp_valid_inv;
   wire vvadd__mem1__read_resp_valid_inv;
   wire vvadd__mem2__write_resp_valid_inv;
-  wire and_362;
-  wire and_363;
+  wire and_373;
+  wire and_374;
   wire [31:0] tmp4_data;
   wire [31:0] tmp8_data;
   wire vvadd__go_valid_load_en;
@@ -114,7 +115,7 @@ module __vvadd__vvadd_0_next(
   wire vvadd__mem2__write_resp_valid_load_en;
   wire ____state_0__at_most_one_next_value;
   wire tmp1;
-  wire [1:0] concat_364;
+  wire [1:0] concat_375;
   wire [3:0] unexpand_for_next_value_78_0_case_1;
   wire [3:0] unexpand_for_next_value_78_0_case_0;
   wire __vvadd__mem0__read_req_valid_and_all_active_outputs_ready;
@@ -129,10 +130,11 @@ module __vvadd__vvadd_0_next(
   wire vvadd__mem0__read_resp_load_en;
   wire vvadd__mem1__read_resp_load_en;
   wire vvadd__mem2__write_resp_load_en;
-  wire or_512;
+  wire or_523;
+  wire p2_enable;
   wire tmp20;
-  wire [3:0] one_hot_sel_365;
-  wire or_366;
+  wire [3:0] one_hot_sel_376;
+  wire or_377;
   wire __vvadd__mem0__read_req_not_stage_load;
   wire __vvadd__mem0__read_req_has_been_sent_reg_load_en;
   wire __vvadd__mem1__read_req_has_been_sent_reg_load_en;
@@ -149,8 +151,8 @@ module __vvadd__vvadd_0_next(
   assign __vvadd__done_valid_and_not_has_been_sent = __vvadd__done_vld_buf & __vvadd__done_not_has_been_sent;
   assign vvadd__done_valid_load_en = vvadd__done_rdy | vvadd__done_valid_inv;
   assign vvadd__done_load_en = __vvadd__done_valid_and_not_has_been_sent & vvadd__done_valid_load_en;
-  assign or_513 = ~p1_tmp18 | vvadd__done_load_en | __vvadd__done_has_been_sent_reg;
-  assign p2_stage_done = p1_valid & __vvadd__mem2__write_resp_valid_reg & or_513;
+  assign or_524 = ~p1_tmp18 | vvadd__done_load_en | __vvadd__done_has_been_sent_reg;
+  assign p2_stage_done = p1_valid & __vvadd__mem2__write_resp_valid_reg & or_524;
   assign p2_not_valid = ~p1_valid;
   assign p1_all_active_inputs_valid = __vvadd__mem0__read_resp_valid_reg & __vvadd__mem1__read_resp_valid_reg;
   assign p1_enable = p2_stage_done | p2_not_valid;
@@ -191,8 +193,8 @@ module __vvadd__vvadd_0_next(
   assign vvadd__mem0__read_resp_valid_inv = ~__vvadd__mem0__read_resp_valid_reg;
   assign vvadd__mem1__read_resp_valid_inv = ~__vvadd__mem1__read_resp_valid_reg;
   assign vvadd__mem2__write_resp_valid_inv = ~__vvadd__mem2__write_resp_valid_reg;
-  assign and_362 = ~tmp18 & p0_data_enable;
-  assign and_363 = tmp18 & p0_data_enable;
+  assign and_373 = ~tmp18 & p0_data_enable;
+  assign and_374 = tmp18 & p0_data_enable;
   assign tmp4_data = __vvadd__mem0__read_resp_reg[31:0];
   assign tmp8_data = __vvadd__mem1__read_resp_reg[31:0];
   assign vvadd__go_valid_load_en = p0_data_enable & ~____state_1 | vvadd__go_valid_inv;
@@ -201,7 +203,7 @@ module __vvadd__vvadd_0_next(
   assign vvadd__mem2__write_resp_valid_load_en = p2_stage_done | vvadd__mem2__write_resp_valid_inv;
   assign ____state_0__at_most_one_next_value = ~tmp18 == one_hot_280[1] & tmp18 == one_hot_280[0];
   assign tmp1 = ~(____state_1 | ~vvadd__go_select);
-  assign concat_364 = {and_362, and_363};
+  assign concat_375 = {and_373, and_374};
   assign unexpand_for_next_value_78_0_case_1 = 4'h0;
   assign unexpand_for_next_value_78_0_case_0 = add_269[3:0];
   assign __vvadd__mem0__read_req_valid_and_all_active_outputs_ready = __vvadd__mem0__read_req_vld_buf & p0_all_active_outputs_ready;
@@ -209,17 +211,18 @@ module __vvadd__vvadd_0_next(
   assign __vvadd__mem1__read_req_valid_and_ready_txfr = __vvadd__mem1__read_req_valid_and_not_has_been_sent & vvadd__mem1__read_req_load_en;
   assign __vvadd__mem2__write_req_valid_and_all_active_outputs_ready = __vvadd__mem2__write_req_vld_buf & vvadd__mem2__write_req_load_en;
   assign __vvadd__mem2__write_req_valid_and_ready_txfr = __vvadd__mem2__write_req_valid_and_not_has_been_sent & vvadd__mem2__write_req_load_en;
-  assign __vvadd__done_valid_and_all_active_outputs_ready = __vvadd__done_vld_buf & or_513;
+  assign __vvadd__done_valid_and_all_active_outputs_ready = __vvadd__done_vld_buf & or_524;
   assign __vvadd__done_valid_and_ready_txfr = __vvadd__done_valid_and_not_has_been_sent & vvadd__done_load_en;
   assign tmp12__1 = tmp4_data + tmp8_data;
   assign vvadd__go_load_en = vvadd__go_vld & vvadd__go_valid_load_en;
   assign vvadd__mem0__read_resp_load_en = vvadd__mem0__read_resp_vld & vvadd__mem0__read_resp_valid_load_en;
   assign vvadd__mem1__read_resp_load_en = vvadd__mem1__read_resp_vld & vvadd__mem1__read_resp_valid_load_en;
   assign vvadd__mem2__write_resp_load_en = vvadd__mem2__write_resp_vld & vvadd__mem2__write_resp_valid_load_en;
-  assign or_512 = ~p0_stage_done | ____state_0__at_most_one_next_value | rst;
+  assign or_523 = ~p0_stage_done | ____state_0__at_most_one_next_value | rst;
+  assign p2_enable = 1'h1;
   assign tmp20 = tmp1 | ~(~____state_1 | tmp18);
-  assign one_hot_sel_365 = unexpand_for_next_value_78_0_case_1 & {4{concat_364[0]}} | unexpand_for_next_value_78_0_case_0 & {4{concat_364[1]}};
-  assign or_366 = and_362 | and_363;
+  assign one_hot_sel_376 = unexpand_for_next_value_78_0_case_1 & {4{concat_375[0]}} | unexpand_for_next_value_78_0_case_0 & {4{concat_375[1]}};
+  assign or_377 = and_373 | and_374;
   assign __vvadd__mem0__read_req_not_stage_load = ~__vvadd__mem0__read_req_valid_and_all_active_outputs_ready;
   assign __vvadd__mem0__read_req_has_been_sent_reg_load_en = __vvadd__mem0__read_req_valid_and_ready_txfr | __vvadd__mem0__read_req_valid_and_all_active_outputs_ready;
   assign __vvadd__mem1__read_req_has_been_sent_reg_load_en = __vvadd__mem1__read_req_valid_and_ready_txfr | __vvadd__mem0__read_req_valid_and_all_active_outputs_ready;
@@ -239,6 +242,7 @@ module __vvadd__vvadd_0_next(
       p1_tmp18 <= 1'h0;
       p0_valid <= 1'h0;
       p1_valid <= 1'h0;
+      p2_valid <= 1'h0;
       __vvadd__mem0__read_req_has_been_sent_reg <= 1'h0;
       __vvadd__mem1__read_req_has_been_sent_reg <= 1'h0;
       __vvadd__mem2__write_req_has_been_sent_reg <= 1'h0;
@@ -259,13 +263,14 @@ module __vvadd__vvadd_0_next(
       __vvadd__done_reg <= 1'h0;
       __vvadd__done_valid_reg <= 1'h0;
     end else begin
-      ____state_0 <= or_366 ? one_hot_sel_365 : ____state_0;
+      ____state_0 <= or_377 ? one_hot_sel_376 : ____state_0;
       ____state_1 <= p0_data_enable ? tmp20 : ____state_1;
       p0_____state_0__1 <= p0_data_enable ? ____state_0 : p0_____state_0__1;
       p0_tmp18 <= p0_data_enable ? tmp18 : p0_tmp18;
       p1_tmp18 <= p1_data_enable ? p0_tmp18 : p1_tmp18;
       p0_valid <= p0_enable ? p0_stage_done : p0_valid;
       p1_valid <= p1_enable ? p1_stage_done : p1_valid;
+      p2_valid <= p2_enable ? p2_stage_done : p2_valid;
       __vvadd__mem0__read_req_has_been_sent_reg <= __vvadd__mem0__read_req_has_been_sent_reg_load_en ? __vvadd__mem0__read_req_not_stage_load : __vvadd__mem0__read_req_has_been_sent_reg;
       __vvadd__mem1__read_req_has_been_sent_reg <= __vvadd__mem1__read_req_has_been_sent_reg_load_en ? __vvadd__mem0__read_req_not_stage_load : __vvadd__mem1__read_req_has_been_sent_reg;
       __vvadd__mem2__write_req_has_been_sent_reg <= __vvadd__mem2__write_req_has_been_sent_reg_load_en ? __vvadd__mem2__write_req_not_stage_load : __vvadd__mem2__write_req_has_been_sent_reg;
@@ -300,6 +305,6 @@ module __vvadd__vvadd_0_next(
   assign vvadd__mem2__write_req_vld = __vvadd__mem2__write_req_valid_reg;
   assign vvadd__mem2__write_resp_rdy = vvadd__mem2__write_resp_load_en;
   `ifdef ASSERT_ON
-  ____state_0__at_most_one_next_value_assert: assert property (@(posedge clk) disable iff ($sampled(rst !== 1'h0 || $isunknown(or_512))) or_512) else $fatal(0, "More than one next_value fired for state element: __state_0");
+  ____state_0__at_most_one_next_value_assert: assert property (@(posedge clk) disable iff ($sampled(rst !== 1'h0 || $isunknown(or_523))) or_523) else $fatal(0, "More than one next_value fired for state element: __state_0");
   `endif  // ASSERT_ON
 endmodule
